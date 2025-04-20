@@ -22,6 +22,11 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(docs_url="/docs", redoc_url="/redoc")
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
+# Для React Router
+@app.get("/{path:path}")
+async def catch_all(path: str):
+    return FileResponse("static/index.html")
+
 # Настройка CORS
 app.add_middleware(
     CORSMiddleware,

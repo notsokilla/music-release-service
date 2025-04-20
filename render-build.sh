@@ -1,14 +1,14 @@
 #!/bin/bash
-# Установка фронтенда
+# Фронтенд
 cd frontend
 npm install
 npm run build
 
-# Копирование статики в бекенд
+# Подготовка статики
 cd ..
 mkdir -p backend/static
 cp -r frontend/build/* backend/static/
 
-# Установка бекенда
+# Бекенд
 cd backend
 pip install -r requirements.txt

@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './GenerateReports.css';
 import BackButton from './BackButton';
-import { API_BASE_URL } from './api/config';  // Относительный путь внутри src/
+import { API_BASE_URL } from './config';  // Относительный путь внутри src/
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 const GenerateReports = () => {
   const [files, setFiles] = useState([]);
