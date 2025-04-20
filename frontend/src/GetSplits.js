@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import BackButton from './BackButton';
-import { API_BASE_URL } from '../api/config';
+import { API_BASE_URL } from './api/config';  // Относительный путь внутри src/
 
 const GetSplits = () => {
   const [splits, setSplits] = useState([]);

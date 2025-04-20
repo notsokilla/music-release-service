@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './GenerateReports.css';
 import BackButton from './BackButton';
-import { API_BASE_URL } from '../api/config';
+import { API_BASE_URL } from './api/config';  // Относительный путь внутри src/
 
 const GenerateReports = () => {
   const [files, setFiles] = useState([]);
