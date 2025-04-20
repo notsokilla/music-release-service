@@ -19,6 +19,11 @@ from fastapi.background import BackgroundTasks
 from typing import List, Dict
 from fastapi.middleware.cors import CORSMiddleware
 
+origins = [
+    "https://music-release-service-front.onrender.com",
+    "http://localhost:3000"  # Для локальной разработки
+]
+
 app = FastAPI(docs_url="/docs", redoc_url="/redoc")
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
@@ -30,7 +35,7 @@ async def catch_all(path: str):
 # Настройка CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://music-release-service-front.onrender.com/"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
