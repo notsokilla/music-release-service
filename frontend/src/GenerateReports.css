@@ -1,0 +1,49 @@
+.generate-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.reports-list {
+  margin: 20px 0;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.report-item {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s;
+}
+
+.report-item:hover {
+  background: #f9f9f9;
+}
+
+.report-item label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+}
+
+.report-name {
+  font-weight: 500;
+  margin: 0 15px;
+  flex-grow: 1;
+}
+
+.report-meta {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.error-message {
+  color: #f44336;
+  padding: 10px;
+  margin: 10px 0;
+  background: #ffebee;
+  border-radius: 4px;
+}
