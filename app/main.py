@@ -20,7 +20,7 @@ from typing import List, Dict
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(docs_url="/docs", redoc_url="/redoc")
-app.mount("/static", StaticFiles(directory="frontend/build"), name="static")
+app.mount("/static", StaticFiles(directory="../frontend/build"), name="static")
 
 # Настройка CORS
 app.add_middleware(
