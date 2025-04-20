@@ -25,7 +25,7 @@ app.mount("/static", StaticFiles(directory="frontend/dist"), name="static")
 # Настройка CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://music-release-service-54ex.onrender.com/"],
+    allow_origins=["https://music-release-service-front.onrender.com/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
