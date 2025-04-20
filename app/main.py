@@ -12,8 +12,8 @@ import logging
 from pydantic import BaseModel
 from decimal import Decimal, getcontext
 from collections import defaultdict
-from database import get_db, Base, engine
-from models import ArtistDB, SplitDB
+from app.database import get_db, Base, engine
+from app.models import ArtistDB, SplitDB
 from fastapi.background import BackgroundTasks
 from typing import List, Dict
 from fastapi.middleware.cors import CORSMiddleware
