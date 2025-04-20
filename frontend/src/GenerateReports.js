@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './GenerateReports.css';
 import BackButton from './BackButton';
+import { API_BASE_URL } from '../api/config';
 
 const GenerateReports = () => {
   const [files, setFiles] = useState([]);
@@ -22,10 +23,8 @@ const GenerateReports = () => {
       const formData = new FormData();
       files.forEach(file => formData.append('reports', file));
 
-      const response = await axios.post('http://localhost:8000/generate-reports', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
+      const response = await axios.post(`${API_BASE_URL}/generate-reports`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
         responseType: 'blob'
       });
 

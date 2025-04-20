@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import BackButton from './BackButton';
+import { API_BASE_URL } from '../api/config';
+
 
 const DeleteSplits = () => {
   const [status, setStatus] = useState({ type: '', message: '' });
@@ -15,7 +17,7 @@ const DeleteSplits = () => {
     setStatus({ type: 'loading', message: 'Удаление распределений...' });
 
     try {
-      const response = await axios.delete('http://localhost:8000/delete-splits');
+      const response = await axios.delete(`${API_BASE_URL}/delete-splits`);
       setStatus({ type: 'success', message: response.data.message });
     } catch (error) {
       const errorMessage = error.response?.data?.detail || 'Ошибка при удалении распределений';

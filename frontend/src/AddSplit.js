@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import BackButton from './BackButton';
+import { API_BASE_URL } from '../api/config';
 
 const AddSplit = () => {
   const [formData, setFormData] = useState({
@@ -71,7 +72,7 @@ const AddSplit = () => {
           }))
       };
 
-      const response = await axios.post('http://localhost:8000/add-split', payload);
+      const response = await axios.post(`${API_BASE_URL}/add-split`, payload);
       
       setStatus({ type: 'success', message: response.data.message });
       setFormData({

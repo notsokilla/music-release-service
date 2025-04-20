@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import BackButton from './BackButton';
+import { API_BASE_URL } from '../api/config';
 
 const GetSplits = () => {
   const [splits, setSplits] = useState([]);
@@ -10,7 +11,7 @@ const GetSplits = () => {
   useEffect(() => {
     const fetchSplits = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/get-splits');
+        const response = await axios.get(`${API_BASE_URL}/get-splits`);
         setSplits(response.data);
       } catch (err) {
         const errorMessage = err.response?.data?.detail || 'Не удалось загрузить распределения';
