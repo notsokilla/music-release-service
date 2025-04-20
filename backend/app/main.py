@@ -563,7 +563,14 @@ async def generate_reports(
             zipf.writestr("00_FULL_REPORT.xlsx", summary_output.getvalue())
         
         background_tasks.add_task(os.unlink, zip_filename)
-        return FileResponse(zip_filename, media_type='application/zip', filename="reports.zip")
+        return FileResponse(
+            zip_filename,
+            media_type='application/zip',
+            headers={
+                'Content-Disposition': 'attachment; filename="reports.zip"',
+                'Access-Control-Expose-Headers': 'Content-Disposition'
+            }
+        )
 
     except Exception as e:
         logger.error(f"Ошибка: {str(e)}", exc_info=True)
