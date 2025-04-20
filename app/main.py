@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 import pandas as pd
@@ -19,11 +20,12 @@ from typing import List, Dict
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(docs_url="/docs", redoc_url="/redoc")
+app.mount("/static", StaticFiles(directory="frontend/dist"), name="static")
 
 # Настройка CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://music-release-service-54ex.onrender.com/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
