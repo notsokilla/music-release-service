@@ -3,6 +3,8 @@ import axios from 'axios';
 import BackButton from './BackButton';
 import { API_BASE_URL } from './api/config';  // Относительный путь внутри src/
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
 
 const DeleteSplits = () => {
   const [status, setStatus] = useState({ type: '', message: '' });
