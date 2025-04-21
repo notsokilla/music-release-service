@@ -24,8 +24,11 @@ origins = [
     "https://music-release-service-front.onrender.com",
     "http://localhost:3000"  # Для локальной разработки
 ]
-app = FastAPI(redirect_slashes=False)
-app = FastAPI(docs_url="/docs", redoc_url="/redoc")
+app = FastAPI(
+    redirect_slashes=False,
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 @app.post("/test-upload")
@@ -59,7 +62,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Разрешить все методы временно для теста
+    allow_methods=["POST"],  # Разрешить все методы временно для теста
     allow_headers=["*"],
     expose_headers=["*"]
 )
