@@ -23,26 +23,29 @@ const GenerateReports = () => {
       const formData = new FormData();
       files.forEach(file => formData.append('reports', file));
 
-      // Пробуем оба варианта URL (со слешем и без)
-      const urls = [
-        `${API_BASE_URL}/generate-reports/`,
-        `${API_BASE_URL}/generate-reports`
-      ];
-
-      let lastError;
-
-      const response = await axios.post(`${API_BASE_URL}/generate-reports/`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        responseType: 'blob',
-        maxRedirects: 0 // Отключаем автоматические редиректы
+      // Вариант 1: Используем fetch вместо axios для лучшего контроля
+      const response = await fetch(`${API_BASE_URL}/generate-reports/`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+        // Не устанавливаем Content-Type вручную для FormData!
       });
 
-      if (!response) {
-        throw lastError || new Error('Не удалось отправить запрос');
+      // Обработка ответа
+      if (!response.ok) {
+        // Пытаемся прочитать ошибку как JSON или текст
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch {
+          errorData = { detail: await response.text() };
+        }
+        throw new Error(errorData.detail || 'Ошибка сервера');
       }
 
       // Создаем ссылку для скачивания
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', 'reports.zip');
@@ -54,27 +57,19 @@ const GenerateReports = () => {
     } catch (error) {
       let errorMessage = 'Ошибка при генерации отчетов';
       
-      if (error.response) {
-        // Попытка прочитать детали ошибки из blob
-        if (error.response.data instanceof Blob) {
-          try {
-            const text = await error.response.data.text();
-            const json = JSON.parse(text);
-            errorMessage = json.detail || errorMessage;
-          } catch {
-            errorMessage = 'Неверный формат ответа сервера';
-          }
-        } else if (error.response.data?.detail) {
-          errorMessage = error.response.data.detail;
-        }
+      // Улучшенная обработка ошибок
+      if (error.message.includes('Failed to fetch')) {
+        errorMessage = 'Ошибка соединения с сервером';
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       setStatus({ 
         type: 'error', 
-        message: errorMessage 
+        message: errorMessage,
       });
+      
+      console.error('Error details:', error);
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +93,15 @@ const GenerateReports = () => {
             disabled={isLoading}
           />
           <div className="file-info">
-            {files.length > 0 ? `Выбрано файлов: ${files.length}` : 'Файлы не выбраны'}
+            {files.length > 0 ? (
+              <ul>
+                {Array.from(files).map((file, index) => (
+                  <li key={index}>{file.name}</li>
+                ))}
+              </ul>
+            ) : (
+              'Файлы не выбраны'
+            )}
           </div>
         </div>
         
@@ -107,15 +110,27 @@ const GenerateReports = () => {
           className="generate-button"
           disabled={isLoading || files.length === 0}
         >
-          {isLoading ? 'Генерация...' : 'Сгенерировать отчеты'}
+          {isLoading ? (
+            <>
+              <span className="spinner"></span>
+              Генерация...
+            </>
+          ) : (
+            'Сгенерировать отчеты'
+          )}
         </button>
         
         {status.message && (
           <div className={`status-message ${status.type}`}>
             {status.message}
             {status.type === 'error' && (
-              <div style={{ marginTop: '10px', fontSize: '0.9em' }}>
-                Проверьте формат файлов или обратитесь к администратору
+              <div className="error-details">
+                Проверьте:
+                <ul>
+                  <li>Формат файлов (только CSV/XLSX)</li>
+                  <li>Размер файлов (не более 10MB каждый)</li>
+                  <li>Соединение с интернетом</li>
+                </ul>
               </div>
             )}
           </div>

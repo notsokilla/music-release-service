@@ -488,6 +488,7 @@ async def generate_reports(
 ):
     logger.info(f"Incoming request: {request.method} {request.url}")
     logger.info(f"Headers: {dict(request.headers)}")
+    logger.info(f"Files received: {[f.filename for f in reports]}")
     
     try:
         if not reports:
