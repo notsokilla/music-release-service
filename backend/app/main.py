@@ -28,6 +28,14 @@ app = FastAPI(redirect_slashes=False)
 app = FastAPI(docs_url="/docs", redoc_url="/redoc")
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
+@app.post("/test-upload")
+async def test_upload(file: UploadFile = File(...)):
+    return {
+        "filename": file.filename,
+        "content_type": file.content_type,
+        "size": os.path.getsize(file.filename)
+    }
+
 # Для React Router
 @app.get("/{path:path}")
 async def catch_all(path: str):
