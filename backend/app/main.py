@@ -24,7 +24,7 @@ origins = [
     "https://music-release-service-front.onrender.com",
     "http://localhost:3000"  # Для локальной разработки
 ]
-
+app = FastAPI(redirect_slashes=False)
 app = FastAPI(docs_url="/docs", redoc_url="/redoc")
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
