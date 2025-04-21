@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './GenerateReports.css';
 import BackButton from './BackButton';
-import { API_BASE_URL } from './config';  // Относительный путь внутри src/
-
+import { API_BASE_URL } from './config';
 
 const GenerateReports = () => {
   const [files, setFiles] = useState([]);
@@ -24,11 +23,36 @@ const GenerateReports = () => {
       const formData = new FormData();
       files.forEach(file => formData.append('reports', file));
 
-      const response = await axios.post(`${API_BASE_URL}/generate-reports`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        responseType: 'blob'
-      });
+      // Пробуем оба варианта URL (со слешем и без)
+      const urls = [
+        `${API_BASE_URL}/generate-reports/`,
+        `${API_BASE_URL}/generate-reports`
+      ];
 
+      let response;
+      let lastError;
+
+      for (const url of urls) {
+        try {
+          response = await axios.post(url, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+            responseType: 'blob',
+            withCredentials: true
+          });
+          break; // Успешный запрос, выходим из цикла
+        } catch (error) {
+          lastError = error;
+          continue; // Пробуем следующий URL
+        }
+      }
+
+      if (!response) {
+        throw lastError || new Error('Не удалось отправить запрос');
+      }
+
+      // Создаем ссылку для скачивания
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -42,17 +66,20 @@ const GenerateReports = () => {
       let errorMessage = 'Ошибка при генерации отчетов';
       
       if (error.response) {
+        // Попытка прочитать детали ошибки из blob
         if (error.response.data instanceof Blob) {
-          const text = await error.response.data.text();
           try {
+            const text = await error.response.data.text();
             const json = JSON.parse(text);
             errorMessage = json.detail || errorMessage;
           } catch {
-            errorMessage = text || errorMessage;
+            errorMessage = 'Неверный формат ответа сервера';
           }
-        } else {
-          errorMessage = error.response.data.detail || errorMessage;
+        } else if (error.response.data?.detail) {
+          errorMessage = error.response.data.detail;
         }
+      } else if (error.message) {
+        errorMessage = error.message;
       }
       
       setStatus({ 
