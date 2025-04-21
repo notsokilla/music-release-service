@@ -29,24 +29,13 @@ const GenerateReports = () => {
         `${API_BASE_URL}/generate-reports`
       ];
 
-      let response;
       let lastError;
 
-      for (const url of urls) {
-        try {
-          response = await axios.post(url, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-            responseType: 'blob',
-            withCredentials: true
-          });
-          break; // Успешный запрос, выходим из цикла
-        } catch (error) {
-          lastError = error;
-          continue; // Пробуем следующий URL
-        }
-      }
+      const response = await axios.post(`${API_BASE_URL}/generate-reports/`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        responseType: 'blob',
+        maxRedirects: 0 // Отключаем автоматические редиректы
+      });
 
       if (!response) {
         throw lastError || new Error('Не удалось отправить запрос');
