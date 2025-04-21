@@ -18,6 +18,7 @@ from app.models import ArtistDB, SplitDB
 from fastapi.background import BackgroundTasks
 from typing import List, Dict
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 
 origins = [
     "https://music-release-service-front.onrender.com",
@@ -32,9 +33,16 @@ app.mount("/", StaticFiles(directory="static", html=True), name="static")
 async def catch_all(path: str):
     return FileResponse("static/index.html")
 
+@app.middleware("http")
+async def normalize_path(request: Request, call_next):
+    if request.url.path.endswith('/generate-reports') and not request.url.path.endswith('/generate-reports/'):
+        new_url = request.url.replace(path=request.url.path + '/')
+        return RedirectResponse(new_url)
+    return await call_next(request)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],  # Разрешить все методы временно для теста
     allow_headers=["*"],
@@ -331,7 +339,8 @@ def generate_artist_report(df: pd.DataFrame, artist: str) -> bytes:
             pd.DataFrame().to_excel(writer, index=False)
         output.seek(0)
         return output.getvalue()
-
+    
+@app.post("/add-split")
 @app.post("/add-split/")
 async def create_track_splits(
     data: TrackSplitsRequest, 
@@ -409,7 +418,7 @@ async def create_track_splits(
         logger.error(f"Ошибка сохранения сплитов: {str(e)}", exc_info=True)
         raise HTTPException(500, detail=str(e))
     
-
+@app.get("/get-splits", response_model=List[Dict])
 @app.get("/get-splits/", response_model=List[Dict])
 async def get_all_splits(db: Session = Depends(get_db)):
     """Получить все распределения прав (новый эндпоинт)"""
@@ -423,6 +432,7 @@ async def get_all_splits(db: Session = Depends(get_db)):
         for split in splits
     ]
 
+@app.delete("/delete-splits")
 @app.delete("/delete-splits/")
 async def delete_all_splits(db: Session = Depends(get_db)):
     """Удалить ВСЕ распределения прав (новый эндпоинт)"""
