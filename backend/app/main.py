@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -36,9 +36,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Явно укажите методы
+    allow_methods=["*"],  # Разрешить все методы временно для теста
     allow_headers=["*"],
-    expose_headers=["Content-Disposition"]  # Для файловых ответов
+    expose_headers=["*"]
 )
 
 REPORT_COLUMNS = [
@@ -468,13 +468,26 @@ def apply_splits(df: pd.DataFrame, db: Session) -> pd.DataFrame:
     
     return df
 
+@app.post("/generate-reports")
 @app.post("/generate-reports/")
 async def generate_reports(
+    request: Request,  # Без значения по умолчанию - должен идти первым
+    background_tasks: BackgroundTasks = BackgroundTasks(),  # Теперь с значением по умолчанию
     reports: List[UploadFile] = File(...),
-    db: Session = Depends(get_db),
-    background_tasks: BackgroundTasks = BackgroundTasks()
+    db: Session = Depends(get_db)
 ):
+    logger.info(f"Incoming request: {request.method} {request.url}")
+    logger.info(f"Headers: {dict(request.headers)}")
+    
     try:
+        if not reports:
+            raise HTTPException(400, "Необходимо загрузить хотя бы один файл")
+            
+        for file in reports:
+            if not (file.filename.lower().endswith('.xlsx') or 
+                   file.filename.lower().endswith('.csv')):
+                raise HTTPException(400, "Поддерживаются только XLSX/CSV файлы")
+
         processed_dfs = []
         for report in reports:
             df = await process_report(report, db)
