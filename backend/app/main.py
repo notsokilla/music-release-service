@@ -13,8 +13,8 @@ import logging
 from pydantic import BaseModel
 from decimal import Decimal, getcontext
 from collections import defaultdict
-from app.database import get_db, Base, engine
-from app.models import ArtistDB, SplitDB
+from backend.app.database import get_db, Base, engine
+from backend.app.models import ArtistDB, SplitDB
 from fastapi.background import BackgroundTasks
 from typing import List, Dict
 from fastapi.middleware.cors import CORSMiddleware
@@ -52,17 +52,17 @@ async def catch_all(path: str):
     return FileResponse("static/index.html")
 
 @app.middleware("http")
-async def normalize_path(request: Request, call_next):
-    if request.url.path.endswith('/generate-reports') and not request.url.path.endswith('/generate-reports/'):
-        new_url = request.url.replace(path=request.url.path + '/')
-        return RedirectResponse(new_url)
-    return await call_next(request)
+async def log_requests(request: Request, call_next):
+    logger.info(f"Received {request.method} {request.url}")
+    response = await call_next(request)
+    logger.info(f"Response: {response.status_code}")
+    return response
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["POST"],  # Разрешить все методы временно для теста
+    allow_methods=["*"],  # Разрешить все методы временно для теста
     allow_headers=["*"],
     expose_headers=["*"]
 )
