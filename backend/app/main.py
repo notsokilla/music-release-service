@@ -36,6 +36,10 @@ async def test_upload(file: UploadFile = File(...)):
         "size": os.path.getsize(file.filename)
     }
 
+@app.post("/ping")
+async def ping():
+    return {"status": "ok"}
+
 # Для React Router
 @app.get("/{path:path}")
 async def catch_all(path: str):
