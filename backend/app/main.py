@@ -36,6 +36,9 @@ async def test_upload(file: UploadFile = File(...)):
         "size": os.path.getsize(file.filename)
     }
 
+async def fake_db():
+    return None
+
 @app.post("/ping")
 async def ping():
     return {"status": "ok"}
@@ -496,7 +499,7 @@ async def generate_reports(
     request: Request,  # Без значения по умолчанию - должен идти первым
     background_tasks: BackgroundTasks = BackgroundTasks(),  # Теперь с значением по умолчанию
     reports: List[UploadFile] = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(fake_db)
 ):
     logger.info(f"Incoming request: {request.method} {request.url}")
     logger.info(f"Headers: {dict(request.headers)}")
