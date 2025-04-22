@@ -9,16 +9,19 @@ import re
 import tempfile
 import zipfile
 import os
+from pathlib import Path
 import logging
 from pydantic import BaseModel
 from decimal import Decimal, getcontext
 from collections import defaultdict
-from backend.app.database import get_db, Base, engine
-from backend.app.models import ArtistDB, SplitDB
+from app.database import get_db, Base, engine
+from app.models import ArtistDB, SplitDB
 from fastapi.background import BackgroundTasks
 from typing import List, Dict
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+import sys
+print("Python paths:", sys.path)  # Проверить пути при запуске
 
 origins = [
     "https://music-release-service-front.onrender.com",
@@ -29,7 +32,8 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+static_path = Path(__file__).parent / "static"
+app.mount("/", StaticFiles(directory=static_path, html=True), name="static")
 
 @app.post("/test-upload")
 async def test_upload(file: UploadFile = File(...)):
