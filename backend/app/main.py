@@ -23,6 +23,14 @@ from fastapi.responses import RedirectResponse
 import sys
 print("Python paths:", sys.path)  # Проверить пути при запуске
 
+def ensure_tables_exist():
+    Base.metadata.create_all(bind=engine)
+
+if __name__ == "__main__":
+    ensure_tables_exist()
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+    
 origins = [
     "https://music-release-service-front.onrender.com",
     "http://localhost:3000"  # Для локальной разработки
