@@ -1,9 +1,15 @@
 # create_tables.py
 from sqlalchemy import text
 from database import Base, engine
-from .models import ArtistDB, SplitDB
+from models import ArtistDB, SplitDB
+import os
 
 def reset_database():
+    # Убедимся, что URL базы данных корректный
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    
     # Удаляем все таблицы
     Base.metadata.drop_all(bind=engine)
     # Создаем заново
