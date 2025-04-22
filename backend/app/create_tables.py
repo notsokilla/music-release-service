@@ -1,7 +1,7 @@
 # create_tables.py
 from sqlalchemy import text
 from database import Base, engine
-from backend.app.models import ArtistDB, SplitDB
+from .models import ArtistDB, SplitDB
 
 def reset_database():
     # Удаляем все таблицы

@@ -1,7 +1,7 @@
 
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
-from backend.app.database import get_db, Base, engine
+from .database import get_db, Base, engine
 from datetime import datetime
 import numbers
 
